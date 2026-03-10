@@ -798,3 +798,1071 @@ Imagine a **restaurant** 🍽️
 
 * **Which files you should modify to contribute to scikit-learn**
 * **How CI/CD works in large Python projects**.
+
+
+I’ll explain both points using a **realistic development workflow** from a project like **scikit-learn** so you can clearly see **how all these files interact**.
+
+---
+
+# 1. How These Files Work Together in a Real GitHub Workflow
+
+Imagine you are a developer contributing a new feature.
+
+We will follow the **complete lifecycle of a change**.
+
+---
+
+## Step 1 — You Read the Project
+
+First you open:
+
+* `README.rst`
+* `CONTRIBUTING.md`
+* `CODE_OF_CONDUCT.md`
+
+### What happens
+
+These tell you:
+
+* what the project does
+* how to run it
+* how to contribute
+* how to behave in the community
+
+Example:
+
+```bash
+git clone https://github.com/scikit-learn/scikit-learn
+```
+
+---
+
+## Step 2 — You Set Up the Project
+
+The project configuration comes from:
+
+* `pyproject.toml`
+* `meson.build`
+* `Makefile`
+
+### Example
+
+Install dependencies:
+
+```bash
+pip install -e .
+```
+
+Build C extensions:
+
+```
+meson build
+```
+
+Run commands:
+
+```bash
+make test
+```
+
+These files **define how the project is built and executed**.
+
+---
+
+## Step 3 — You Write Code
+
+You edit Python files like:
+
+```
+sklearn/linear_model/
+```
+
+But before committing, **automatic checks run**.
+
+---
+
+## Step 4 — Pre-Commit Checks Run
+
+Configuration from:
+
+* `.pre-commit-config.yaml`
+
+Tools run automatically before committing.
+
+Example command:
+
+```bash
+git commit -m "Add new regression method"
+```
+
+Before the commit succeeds, tools check:
+
+* formatting
+* lint errors
+* import order
+
+Example failure:
+
+```
+ruff found 3 errors
+```
+
+You must fix them before committing.
+
+---
+
+## Step 5 — Git Handles Files
+
+Git uses:
+
+* `.gitignore`
+* `.gitattributes`
+* `.mailmap`
+
+### Example
+
+When you run:
+
+```bash
+git add .
+```
+
+Git will ignore files like:
+
+```
+__pycache__/
+*.pyc
+```
+
+Because `.gitignore` says so.
+
+---
+
+## Step 6 — You Push Code to GitHub
+
+```bash
+git push origin my-feature
+```
+
+Now **CI (Continuous Integration)** starts automatically.
+
+---
+
+## Step 7 — CI Runs Tests
+
+CI uses configuration files like:
+
+* `.codecov.yml`
+* `.coveragerc`
+
+CI runs:
+
+```
+pytest
+coverage
+```
+
+Example result:
+
+```
+Tests passed
+Coverage: 92%
+```
+
+Coverage is uploaded to **Codecov**.
+
+If coverage drops too much:
+
+```
+❌ CI Failed
+```
+
+Your pull request cannot merge.
+
+---
+
+## Step 8 — Code Review Happens
+
+Maintainers review your code.
+
+They may check:
+
+* style rules
+* contribution rules
+
+Using guidance from:
+
+* `CONTRIBUTING.md`
+* `AGENTS.md`
+
+Example rule:
+
+```
+If AI tools were used, disclose them.
+```
+
+---
+
+## Step 9 — Security and Licensing
+
+Before merging, the project ensures:
+
+* license compliance
+* no security risks
+
+Files involved:
+
+* `COPYING`
+* `SECURITY.md`
+
+Example:
+
+If someone finds a vulnerability, they follow instructions in `SECURITY.md`.
+
+---
+
+## Step 10 — Contribution Is Published
+
+After merge:
+
+* Git history is cleaned using `.git-blame-ignore-revs`
+* contributor identities normalized using `.mailmap`
+
+Now your contribution becomes part of the project.
+
+Researchers using the library may cite it using:
+
+* `CITATION.cff`
+
+---
+
+# Complete Workflow (Simplified)
+
+```
+Developer writes code
+        ↓
+pre-commit checks (.pre-commit-config.yaml)
+        ↓
+Git manages files (.gitignore, .gitattributes)
+        ↓
+Push to GitHub
+        ↓
+CI runs tests (.coveragerc)
+        ↓
+Coverage checked (.codecov.yml)
+        ↓
+Code review (CONTRIBUTING.md)
+        ↓
+Security & license checks
+        ↓
+Merged into project
+```
+
+---
+
+# 2. Which Files Beginners Should Care About First
+
+When you start contributing, **you do NOT need to learn everything immediately**.
+
+Focus on these first.
+
+---
+
+## 1️⃣ `README.rst` (Start Here)
+
+Purpose:
+
+* Understand the project
+* Learn how to install it
+* See usage examples
+
+Example section:
+
+```
+Installation
+pip install scikit-learn
+```
+
+This is always the **first file beginners read**.
+
+---
+
+## 2️⃣ `CONTRIBUTING.md`
+
+This is the **most important file for contributors**.
+
+It explains:
+
+* how to fork
+* how to run tests
+* how to submit pull requests
+
+Example instructions:
+
+```
+1 Fork repository
+2 Create branch
+3 Add tests
+4 Open pull request
+```
+
+---
+
+## 3️⃣ `pyproject.toml`
+
+Important because it shows:
+
+* dependencies
+* build system
+* development tools
+
+Example:
+
+```toml
+[tool.ruff]
+line-length = 88
+```
+
+This tells you the **coding style rules**.
+
+---
+
+## 4️⃣ `.pre-commit-config.yaml`
+
+Very helpful because it shows:
+
+* what automatic checks will run
+* what tools are used
+
+Example tools:
+
+* **Ruff**
+* **Black**
+
+---
+
+## 5️⃣ `.gitignore`
+
+Beginners often accidentally commit things like:
+
+```
+.env
+__pycache__
+```
+
+`.gitignore` prevents this.
+
+---
+
+# Files Beginners Can Ignore (Initially)
+
+You usually don't need to worry about these early:
+
+| File             | Why                              |
+| ---------------- | -------------------------------- |
+| `.codecov.yml`   | CI maintainers manage it         |
+| `.coveragerc`    | Advanced testing config          |
+| `.gitattributes` | Rarely changed                   |
+| `.mailmap`       | Maintainers manage               |
+| `meson.build`    | Only needed for core development |
+
+---
+
+# Beginner Learning Path (Recommended)
+
+1️⃣ Read `README.rst`
+2️⃣ Read `CONTRIBUTING.md`
+3️⃣ Run the project locally
+4️⃣ Understand `pyproject.toml`
+5️⃣ Enable pre-commit hooks
+
+Then start contributing.
+
+---
+
+✅ If you want, I can also explain **three very useful things for understanding repositories like scikit-learn**:
+
+1️⃣ **Complete GitHub repository structure (src, tests, docs, CI)**
+2️⃣ **What happens inside `.github/workflows` (GitHub Actions)**
+3️⃣ **How large Python libraries like scikit-learn are architected internally**.
+
+If your goal is to **fork the scikit-learn repository but keep only a minimal Python package (no CI/CD, automation, or contributor infrastructure)**, you can safely remove many files. Below is a **practical guide**.
+
+---
+
+# 1️⃣ Files You Can Safely Delete (CI/CD & Automation)
+
+These exist mainly for **continuous integration, code quality automation, and GitHub workflows**.
+
+You can remove them if you don't want CI/CD.
+
+### CI / Coverage
+
+* `.codecov.yml`
+* `.coveragerc`
+
+Purpose: test coverage reports.
+
+---
+
+### Git / automation helpers
+
+* `.git-blame-ignore-revs`
+* `.gitattributes`
+* `.mailmap`
+
+Purpose: Git history management.
+
+---
+
+### Developer automation
+
+* `.pre-commit-config.yaml`
+
+Purpose: run linting automatically before commits.
+
+---
+
+### Contributor / community files
+
+If you're working alone, these are optional:
+
+* `CODE_OF_CONDUCT.md`
+* `CONTRIBUTING.md`
+* `SECURITY.md`
+* `AGENTS.md`
+* `CITATION.cff`
+
+These mainly help **open-source contributors and researchers**.
+
+---
+
+# 2️⃣ Files You Should Probably Keep
+
+Even for a minimal Python package, some files are still useful.
+
+### Keep these
+
+| File             | Why                                 |
+| ---------------- | ----------------------------------- |
+| `.gitignore`     | prevents junk files being committed |
+| `README.rst`     | project description                 |
+| `COPYING`        | license                             |
+| `pyproject.toml` | Python build configuration          |
+
+Without `pyproject.toml`, packaging becomes harder.
+
+---
+
+# 3️⃣ Files That Depend on Your Build System
+
+These depend on **how much of the original build system you want to keep**.
+
+### `Makefile`
+
+Optional.
+
+Delete if you don't plan to run commands like:
+
+```
+make test
+make clean
+```
+
+---
+
+### `meson.build`
+
+Important **only if you want compiled C extensions**.
+
+scikit-learn uses **Meson** to build its C/C++ parts.
+
+If you remove this:
+
+* you cannot build compiled components
+* performance parts may break
+
+So:
+
+| Goal                            | Action |
+| ------------------------------- | ------ |
+| Pure Python fork                | delete |
+| Keep full sklearn functionality | keep   |
+
+---
+
+# 4️⃣ What a Minimal Repo Might Look Like
+
+A **simple Python package repo** might look like this:
+
+```
+myproject/
+│
+├── pyproject.toml
+├── README.md
+├── LICENSE
+├── .gitignore
+│
+├── package_name/
+│   ├── __init__.py
+│   └── module.py
+│
+└── tests/
+```
+
+Everything else is optional.
+
+---
+
+# 5️⃣ Example: Minimal Files to Keep
+
+If I were simplifying the root of the repo, I'd keep:
+
+```
+.gitignore
+README.rst
+COPYING
+pyproject.toml
+```
+
+Everything else from your list could be removed **if you truly want minimal setup**.
+
+---
+
+# 6️⃣ Important Warning ⚠️
+
+Forking **scikit-learn** and removing build files like `meson.build` will likely break the project because:
+
+* scikit-learn depends on **compiled extensions**
+* those are built using **Meson**
+
+So if your goal is:
+
+| Goal                          | Recommendation          |
+| ----------------------------- | ----------------------- |
+| Learn from code               | fine to simplify        |
+| Maintain working sklearn fork | keep build system       |
+| Make lightweight variant      | major refactor required |
+
+---
+
+# 7️⃣ Practical Recommendation (Best Option)
+
+Instead of deleting files immediately:
+
+1️⃣ Fork repo
+2️⃣ Create a branch
+
+```
+minimal-version
+```
+
+3️⃣ Remove CI files gradually
+4️⃣ Test if package still installs
+
+---
+
+✅ If you'd like, I can also show:
+
+* **The smallest possible working scikit-learn fork structure**
+* **Which directories contain the real ML algorithms (very useful)**
+* **Which parts of sklearn are C vs Python (important before deleting build files)**.
+
+I'll explain all **three topics step-by-step using the structure of the scikit-learn repository** so you can understand how large Python libraries are organized. Think of it like **layers of a software project**.
+
+---
+
+# 1️⃣ Complete GitHub Repository Structure
+
+*(src, tests, docs, CI)*
+
+Most large Python libraries follow a structure similar to this:
+
+```
+project/
+│
+├── .github/
+│   └── workflows/
+│
+├── docs/
+│
+├── sklearn/
+│
+├── tests/
+│
+├── pyproject.toml
+├── README.rst
+├── LICENSE
+└── Makefile
+```
+
+Let's explain each important folder.
+
+---
+
+## 📁 `sklearn/` (Source Code)
+
+This is the **main library code**.
+
+Example structure:
+
+```
+sklearn/
+│
+├── __init__.py
+├── linear_model/
+├── tree/
+├── svm/
+├── ensemble/
+├── cluster/
+├── metrics/
+├── preprocessing/
+```
+
+Examples:
+
+* `linear_model` → linear regression, logistic regression
+* `tree` → decision trees
+* `svm` → support vector machines
+* `cluster` → clustering algorithms
+
+Example file:
+
+```python
+sklearn/linear_model/_logistic.py
+```
+
+This contains the **Logistic Regression implementation**.
+
+---
+
+## 📁 `tests/`
+
+Contains **unit tests** to ensure code works correctly.
+
+Example:
+
+```
+tests/
+│
+├── test_linear_model.py
+├── test_tree.py
+└── test_metrics.py
+```
+
+Example test:
+
+```python
+def test_logistic_regression():
+    model = LogisticRegression()
+    model.fit(X, y)
+    assert model.predict(X).shape == (100,)
+```
+
+Tests are usually run with **pytest**.
+
+Run tests:
+
+```bash
+pytest
+```
+
+---
+
+## 📁 `docs/`
+
+Contains documentation for users.
+
+Example structure:
+
+```
+docs/
+│
+├── index.rst
+├── tutorials/
+├── examples/
+└── api/
+```
+
+Documentation is usually built using **Sphinx**.
+
+Example command:
+
+```
+make html
+```
+
+Output:
+
+```
+docs/_build/html/index.html
+```
+
+This becomes the **official documentation website**.
+
+---
+
+## 📁 `.github/`
+
+Contains **GitHub automation settings**.
+
+Example:
+
+```
+.github/
+│
+├── workflows/
+│
+└── ISSUE_TEMPLATE/
+```
+
+Most important folder is:
+
+```
+.github/workflows/
+```
+
+This is where **CI/CD pipelines live**.
+
+We'll explain that next.
+
+---
+
+# 2️⃣ What Happens Inside `.github/workflows`
+
+*(GitHub Actions CI/CD)*
+
+Inside `.github/workflows` you will see files like:
+
+```
+.github/workflows/
+│
+├── tests.yml
+├── build.yml
+├── lint.yml
+└── wheels.yml
+```
+
+These define **GitHub Actions pipelines**.
+
+GitHub Actions automatically run tasks when something happens, like:
+
+* push
+* pull request
+* release
+
+---
+
+## Example Workflow
+
+Example file:
+
+```
+tests.yml
+```
+
+Example content:
+
+```yaml
+name: Run Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install -e .
+      - name: Run tests
+        run: pytest
+```
+
+### What happens automatically
+
+When someone pushes code:
+
+```
+Developer pushes code
+        ↓
+GitHub starts workflow
+        ↓
+Server installs dependencies
+        ↓
+Tests run automatically
+        ↓
+Results shown in PR
+```
+
+If tests fail:
+
+```
+❌ CI Failed
+```
+
+The PR cannot be merged.
+
+---
+
+## Typical Workflows in Large Libraries
+
+Large projects like **scikit-learn** often have multiple workflows:
+
+### Test workflow
+
+Runs tests on multiple Python versions:
+
+```
+Python 3.9
+Python 3.10
+Python 3.11
+Python 3.12
+```
+
+---
+
+### Lint workflow
+
+Runs style checks using tools like:
+
+* **Ruff**
+* **Black**
+
+---
+
+### Build workflow
+
+Compiles the project and checks installation.
+
+---
+
+### Release workflow
+
+Builds Python wheels and publishes to **PyPI**.
+
+---
+
+# 3️⃣ Internal Architecture of Large Python Libraries
+
+Libraries like **scikit-learn** are carefully structured to keep things modular.
+
+Here is the **simplified architecture**.
+
+```
+User API
+   │
+   ▼
+Algorithms
+   │
+   ▼
+Utilities
+   │
+   ▼
+Low-level optimized code (C/C++)
+```
+
+Let's break it down.
+
+---
+
+## Layer 1 — Public API
+
+This is what users interact with.
+
+Example:
+
+```python
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression()
+model.fit(X, y)
+```
+
+This API is defined in files like:
+
+```
+sklearn/linear_model/__init__.py
+```
+
+These files expose classes to users.
+
+---
+
+## Layer 2 — Algorithm Implementation
+
+Actual algorithm logic lives here.
+
+Example:
+
+```
+sklearn/linear_model/_logistic.py
+```
+
+Example structure:
+
+```python
+class LogisticRegression:
+    def fit(self, X, y):
+        ...
+```
+
+This contains:
+
+* training logic
+* optimization
+* prediction methods
+
+---
+
+## Layer 3 — Shared Utilities
+
+Reusable tools used by many algorithms.
+
+Example folder:
+
+```
+sklearn/utils/
+```
+
+Examples:
+
+* data validation
+* random number utilities
+* matrix operations
+
+Example file:
+
+```
+sklearn/utils/validation.py
+```
+
+Example function:
+
+```python
+check_array(X)
+```
+
+Ensures input data is valid.
+
+---
+
+## Layer 4 — Performance Layer (C/C++)
+
+Some operations are too slow in pure Python.
+
+So scikit-learn uses compiled extensions.
+
+Example files:
+
+```
+sklearn/tree/_tree.pyx
+```
+
+`.pyx` files are **Cython** code.
+
+These compile to C for speed.
+
+Example benefits:
+
+| Task              | Python | C extension |
+| ----------------- | ------ | ----------- |
+| large matrix math | slow   | fast        |
+| tree traversal    | slow   | fast        |
+
+---
+
+## Example: Decision Tree Flow
+
+When a user trains a decision tree:
+
+```
+User calls fit()
+      ↓
+Python algorithm code runs
+      ↓
+Calls optimized Cython tree builder
+      ↓
+Tree structure built quickly
+      ↓
+Model returned
+```
+
+---
+
+# Full Architecture Overview
+
+```
+User Code
+   │
+   ▼
+Public API
+(sklearn.linear_model)
+   │
+   ▼
+Algorithm Implementation
+(_logistic.py)
+   │
+   ▼
+Utilities
+(sklearn.utils)
+   │
+   ▼
+Cython / C Extensions
+(_tree.pyx)
+```
+
+---
+
+# Why Large Libraries Use This Architecture
+
+Benefits:
+
+### 1️⃣ Clean API
+
+Users only see simple interfaces.
+
+```
+model.fit()
+model.predict()
+```
+
+---
+
+### 2️⃣ Code Reuse
+
+Utilities can be reused across algorithms.
+
+---
+
+### 3️⃣ Performance
+
+Critical parts run in compiled code.
+
+---
+
+### 4️⃣ Maintainability
+
+Different teams can work on different modules.
+
+---
+
+# Quick Mental Model
+
+Think of the project like a **car factory**.
+
+| Layer       | Analogy                    |
+| ----------- | -------------------------- |
+| API         | steering wheel             |
+| Algorithms  | engine                     |
+| utilities   | shared parts               |
+| C/C++ layer | high-performance machinery |
+
+---
+
+✅ If you're forking **scikit-learn**, I can also show something extremely useful:
+
+* **The 10 most important directories in sklearn to understand the entire codebase**
+* **Where each machine learning algorithm actually lives**
+* **The exact execution path when `model.fit()` runs** (this helps a LOT when modifying the library).
